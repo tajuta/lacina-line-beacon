@@ -28,6 +28,7 @@ BOT_OAUTH = os.environ["SLACK_BOT_OAUTH"]
 
 TALK_API_KEY =  os.environ["A3RT_API_KEY"]
 TALK_API_URL = 'https://api.a3rt.recruit-tech.co.jp/talk/v1/smalltalk'
+TALK_PUSH_FLAG = os.environ["LINE_TO_SLACK"]
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
@@ -71,21 +72,22 @@ def handle_message(event):
         TextSendMessage(text=ret),
     ])
 
-    # LINEユーザー名の取得
-    user_id = event.source.user_id
-    try:
-        user_name = line_bot_api.get_profile(user_id).display_name
-    except LineBotApiError as e:
-        user_name = "Unknown"
+    # botとの会話内容をSlackに連携
+    if TALK_PUSH_FLAG == "true":
+        # LINEユーザー名の取得
+        user_id = event.source.user_id
+        try:
+            user_name = line_bot_api.get_profile(user_id).display_name
+        except LineBotApiError as e:
+            user_name = "Unknown"
 
-    slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
+        slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
-    # slackに会話の内容を連携
-    send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
-                + "[みまもりラシーナ] {ret}\n".format(ret=ret)
+        send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
+                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
 
-    # メッセージの送信
-    slack_info.notify(text=send_msg)
+        # メッセージの送信
+        slack_info.notify(text=send_msg)
 
 @handler.add(BeaconEvent)
 def handle_beacon(event):
