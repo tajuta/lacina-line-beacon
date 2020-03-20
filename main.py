@@ -81,7 +81,7 @@ def handle_message(event):
     slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
     # slackに会話の内容を連携
-    send_msg = "[{user_name}]{mesasge}\n".format(user_name=user_name, message=event.message.text) \
+    send_msg = "[{user_name}]{message}\n".format(user_name=user_name, message=event.message.text) \
                 + "[line-bot]{ret}\n".format(ret=ret)
 
     # メッセージの送信
