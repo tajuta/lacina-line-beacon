@@ -65,10 +65,27 @@ def handle_message(event):
     else:
         ret = '・・・・・・・・・'
 
+    # LINEユーザーに返答する
     line_bot_api.reply_message(
     event.reply_token,[
         TextSendMessage(text=ret),
     ])
+
+    # LINEユーザー名の取得
+    user_id = event.source.user_id
+    try:
+        user_name = line_bot_api.get_profile(user_id).display_name
+    except LineBotApiError as e:
+        user_name = "Unknown"
+
+    slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
+
+    # slackに会話の内容を連携
+    send_msg = "[{user_name}]".event.message.text."\n".format(user_name=user_name) \
+                + "[line-bot]".ret
+
+    # メッセージの送信
+    slack_info.notify(text=send_msg)
 
 @handler.add(BeaconEvent)
 def handle_beacon(event):
