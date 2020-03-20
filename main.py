@@ -1,6 +1,8 @@
 from flask import Flask, request, abort, send_file
 import os
 import slackweb
+import requests
+import json
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -23,6 +25,9 @@ YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 WEB_HOOK_LINKS = os.environ["SLACK_WEB_HOOKS_URL"]
 BOT_OAUTH = os.environ["SLACK_BOT_OAUTH"]
+
+TALK_API_KEY =  os.environ["A3RT_API_KEY"]
+TALK_API_URL = 'https://api.a3rt.recruit-tech.co.jp/talk/v1/smalltalk'
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
@@ -50,9 +55,19 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+
+    # Talk APIを使って会話する
+    r = requests.post(url,{'apikey':TALK_API_KEY,'query':event.message.text})
+    data = json.loads(r.text)
+    if data['status'] == 0:
+        t = data['results']
+        ret = t[0]['reply']
+    else:
+        ret = '・・・・・・・・・'
+
     line_bot_api.reply_message(
     event.reply_token,[
-        TextSendMessage(text=event.message.text),
+        TextSendMessage(text=ret),
     ])
 
 @handler.add(BeaconEvent)
