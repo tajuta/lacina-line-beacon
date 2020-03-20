@@ -66,15 +66,18 @@ def handle_beacon(event):
     except LineBotApiError as e:
         user_name = "Unknown"
 
-    line_bot_api.reply_message(
-        event.reply_token,[
-            TextSendMessage(text='beaconを検出しました. event.type={}, hwid={}, device_message(hex string)={}, user_name={}'.format(event.beacon.type, event.beacon.hwid, event.beacon.dm, user_name)),
-        ])
+    #line_bot_api.reply_message(
+    #    event.reply_token,[
+    #        TextSendMessage(text='beaconを検出しました. event.type={}, hwid={}, device_message(hex string)={}, user_name={}'.format(event.beacon.type, event.beacon.hwid, event.beacon.dm, user_name)),
+    #    ])
 
     slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
     # slack側に投稿するメッセージの加工
-    send_msg = "{user_name}さんが入室しました。({user_id})\n".format(user_name=user_name,user_id=user_id)
+    if event.beacon.type == "enter":
+        send_msg = "{user_name}さんが入室しました。({user_id})\n".format(user_name=user_name,user_id=user_id)
+    else if event.beacon.type == "leave":
+        send_msg = "{user_name}さんが退室しました。({user_id})\n".format(user_name=user_name,user_id=user_id)
 
     # メッセージの送信
     slack_info.notify(text=send_msg)
