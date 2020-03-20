@@ -54,9 +54,17 @@ def handle_message(event):
 @handler.add(BeaconEvent)
 def handle_beacon(event):
     print(event)
+
+    # LINEユーザー名の取得
+    user_id = event.source.user_id
+    try:
+        user_name = line_bot_api.get_profile(user_id).display_name
+    except LineBotApiError as e:
+        user_name = "Unknown"
+
     line_bot_api.reply_message(
         event.reply_token,[
-            TextSendMessage(text='beaconを検出しました. event.type={}, hwid={}, device_message(hex string)={}'.format(event.beacon.type, event.beacon.hwid, event.beacon.dm)),
+            TextSendMessage(text='beaconを検出しました. event.type={}, hwid={}, device_message(hex string)={}, user_name={}'.format(event.beacon.type, event.beacon.hwid, event.beacon.dm, user_name)),
         ])
 
 if __name__ == "__main__":
