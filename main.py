@@ -57,7 +57,7 @@ def callback():
 def handle_message(event):
 
     # Talk APIを使って会話する
-    r = requests.post(url,{'apikey':TALK_API_KEY,'query':event.message.text})
+    r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
     data = json.loads(r.text)
     if data['status'] == 0:
         t = data['results']
