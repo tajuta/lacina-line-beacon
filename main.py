@@ -76,7 +76,7 @@ def handle_beacon(event):
     # slack側に投稿するメッセージの加工
     if event.beacon.type == "enter":
         send_msg = "{user_name}さんが入室しました。({user_id})\n".format(user_name=user_name,user_id=user_id)
-    else if event.beacon.type == "leave":
+    elif event.beacon.type == "leave":
         send_msg = "{user_name}さんが退室しました。({user_id})\n".format(user_name=user_name,user_id=user_id)
 
     # メッセージの送信
