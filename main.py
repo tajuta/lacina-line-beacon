@@ -81,9 +81,15 @@ def handle_message(event):
         except LineBotApiError as e:
             user_name = "Unknown"
 
+        msg_type = "個別"
+        room_id = "unknown"
+        if event.source.type == "group":
+            msg_type = "グループ"
+            room_id = event.source.group_id
+
         slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
-        send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
+        send_msg = "[{user_name}]({msg_type})({room_id}) {message}\n".format(user_name=user_name, msg_type=msg_type, room_id=room_id, message=event.message.text) \
                     + "[みまもりラシーナ] {ret}\n".format(ret=ret)
 
         # メッセージの送信
