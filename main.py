@@ -70,10 +70,10 @@ def handle_message(event):
     if "先生" in event.message.text or "話したい" in event.message.text:
         line_bot_api.reply_message(
         event.reply_token,[
-            TextSendMessage(text="先生を呼び出しているのでちょっとまってね。（すぐにお返事できない場合があるよ）"),
+            TextSendMessage(text="先生を呼び出しているのでちょっとまっててね。（すぐにお返事できない場合があるよ）"),
         ])
         # Slackにメッセージを送信
-        send_msg = "<!channel> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。".format(user_name=user_name) \
+        send_msg = "<!channel> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(user_name=user_name) \
                 + "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text)
         slack_info.notify(text=send_msg)
     # Talk APIを使って会話する
