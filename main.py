@@ -20,7 +20,7 @@ app = Flask(__name__)
 statusDict  = {}
 status = 0
 
-#環境変数取得
+# 環境変数取得
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 WEB_HOOK_LINKS = os.environ["SLACK_WEB_HOOKS_URL"]
@@ -57,43 +57,46 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    # Talk APIを使って会話する
-    r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
-    data = json.loads(r.text)
-    if data['status'] == 0:
-        t = data['results']
-        ret = t[0]['reply']
-    else:
-        ret = '・・・・・・・・・'
+    # LINEユーザー名の取得
+    user_id = event.source.user_id
+    try:
+        user_name = line_bot_api.get_profile(user_id).display_name
+    except LineBotApiError as e:
+        user_name = "Unknown"
 
-    # LINEユーザーに返答する
-    line_bot_api.reply_message(
-    event.reply_token,[
-        TextSendMessage(text=ret),
-    ])
+    slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
-    # botとの会話内容をSlackに連携
-    if TALK_PUSH_FLAG == "true":
-        # LINEユーザー名の取得
-        user_id = event.source.user_id
-        try:
-            user_name = line_bot_api.get_profile(user_id).display_name
-        except LineBotApiError as e:
-            user_name = "Unknown"
-
-        msg_type = "個別"
-        room_id = "unknown"
-        if event.source.type == "group":
-            msg_type = "グループ"
-            room_id = event.source.group_id
-
-        slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
-
-        send_msg = "[{user_name}]({msg_type})({room_id}) {message}\n".format(user_name=user_name, msg_type=msg_type, room_id=room_id, message=event.message.text) \
-                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
-
-        # メッセージの送信
+    # 先生を召喚する
+    if event.message.text in "先生と話したい":
+        line_bot_api.reply_message(
+        event.reply_token,[
+            TextSendMessage(text="先生を呼び出しているのでちょっとまってね。（すぐにお返事できない場合があるよ）"),
+        ])
+        # Slackにメッセージを送信
+        send_msg = "[user_name] {message}\n".format(user_name=user_name, message=event.message.text) \
+                + "@channel {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。".format(user_name=user_name)
         slack_info.notify(text=send_msg)
+    # Talk APIを使って会話する
+    else:
+        r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
+        data = json.loads(r.text)
+        if data['status'] == 0:
+            t = data['results']
+            ret = t[0]['reply']
+        else:
+            ret = '・・・・・・・・・'
+
+        line_bot_api.reply_message(
+        event.reply_token,[
+            TextSendMessage(text=ret),
+        ])
+
+        # botとの会話内容をSlackに連携
+        if TALK_PUSH_FLAG == "true":
+            send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
+                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
+            # メッセージの送信
+            slack_info.notify(text=send_msg)
 
 @handler.add(BeaconEvent)
 def handle_beacon(event):
