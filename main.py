@@ -91,16 +91,16 @@ def handle_message(event):
             mention = "@moe.yoshida"
         elif "うえお" in event.message.text or "上尾" in event.message.text or "ゆかもん" in event.message.text:
             teacher_name = "うえお"
-            mention = "yuka.ueo"
+            mention = "@yuka.ueo"
         elif "おかだ" in event.message.text or "岡田" in event.message.text or "おかT" in event.message.text or "だー" in event.message.text:
             teacher_name = "おかだ"
-            mention = "kouta.okada"
+            mention = "@kouta.okada"
         elif "しみず" in event.message.text or "清水" in event.message.text or "たろう" in event.message.text:
             teacher_name = "しみず"
-            mention = "tarou.shimizu"
+            mention = "@tarou.shimizu"
         elif "よしも" in event.message.text or "吉本" in event.message.text or "ちか" in event.message.text:
             teacher_name = "よしもと"
-            mention = "chika.yoshimoto"
+            mention = "@chika.yoshimoto"
 
         line_bot_api.reply_message(
         event.reply_token,[
@@ -111,6 +111,10 @@ def handle_message(event):
                 + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name, teacher_name=teacher_name) \
                 + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
         slack_info.notify(text=send_msg)
+        # 先生を個別に呼び出す場合はダイレクトメッセージも送る
+        if teacher_name !== "":
+            slack_info.notify(text=send_msg, channel=mention)
+            
     # Talk APIを使って会話する
     else:
         r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
