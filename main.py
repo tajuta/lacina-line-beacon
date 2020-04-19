@@ -67,28 +67,50 @@ def handle_message(event):
     slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
     # 先生を召喚する
-    if "先生" in event.message.text or "話したい" in event.message.text:
+    if "先生" in event.message.text or "話" in event.message.text or "呼" in event.message.text or "召喚" in event.message.text:
         teacher_name = ""
         mention = "!channel"
-        channel = "#mimamori-lacina"
         # どの先生を呼び出すのか特定する
-        if "でんでん" in event.message.text or "でせ" in event.message.text:
+        if "でんでん" in event.message.text or "でせ" in event.message.text or "田重田" in event.message.text or "たじゅうた" in event.message.text:
             teacher_name = "でんでん"
             mention = "@tajuta"
-            channel = mention
+        elif "まっちゃん" in event.message.text or "ませ" in event.message.text or "松尾" in event.message.text or "まつお" in event.message.text:
+            teacher_name = "まっちゃん"
+            mention = "@k.matsuo"
+        elif "つばさ" in event.message.text or "つせ" in event.message.text:
+            teacher_name = "つばさ"
+            mention = "@tu"
+        elif "うちだ" in event.message.text or "うせ" in event.message.text or "内田" in event.message.text or "ぷーさん" in event.message.text:
+            teacher_name = "うちだ"
+            mention = "@susumu.uchida"
         elif "さめ" in event.message.text or "シャーク" in event.message.text or "鮫" in event.message.text:
             teacher_name = "さめしま"
             mention = "@kana.sameshima"
-            channel = mention
+        elif "よっしー" in event.message.text or "吉田" in event.message.text or "よしだ" in event.message.text:
+            teacher_name = "よしだ"
+            mention = "@moe.yoshida"
+        elif "うえお" in event.message.text or "上尾" in event.message.text or "ゆかもん" in event.message.text:
+            teacher_name = "うえお"
+            mention = "yuka.ueo"
+        elif "おかだ" in event.message.text or "岡田" in event.message.text or "おかT" in event.message.text or "だー" in event.message.text:
+            teacher_name = "おかだ"
+            mention = "kouta.okada"
+        elif "しみず" in event.message.text or "清水" in event.message.text or "たろう" in event.message.text:
+            teacher_name = "しみず"
+            mention = "tarou.shimizu"
+        elif "よしも" in event.message.text or "吉本" in event.message.text or "ちか" in event.message.text:
+            teacher_name = "よしもと"
+            mention = "chika.yoshimoto"
 
         line_bot_api.reply_message(
         event.reply_token,[
             TextSendMessage(text=teacher_name + "先生を呼び出しているのでちょっとまっててね。（すぐにお返事できない場合があるよ）"),
         ])
         # Slackにメッセージを送信
-        send_msg = "<{mention}> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name) \
-                + "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text)
-        slack_info.notify(text=send_msg, channel=channel)
+        send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
+                + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name) \
+                + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
+        slack_info.notify(text=send_msg)
     # Talk APIを使って会話する
     else:
         r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
