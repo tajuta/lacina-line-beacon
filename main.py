@@ -112,9 +112,9 @@ def handle_message(event):
                 + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
         slack_info.notify(text=send_msg)
         # 先生を個別に呼び出す場合はダイレクトメッセージも送る
-        if teacher_name !== "":
+        if not teacher_name == "":
             slack_info.notify(text=send_msg, channel=mention)
-            
+
     # Talk APIを使って会話する
     else:
         r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
