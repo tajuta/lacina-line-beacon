@@ -68,14 +68,27 @@ def handle_message(event):
 
     # 先生を召喚する
     if "先生" in event.message.text or "話したい" in event.message.text:
+        teacher_name = ""
+        mention = "!channel"
+        channel = ""
+        # どの先生を呼び出すのか特定する
+        if "でんでん" in event.message.text or "でせ" in event.message.text:
+            teacher_name = "でんでん"
+            mention = "@tajuta"
+            channel = mention
+        elif "さめ" in event.message.text or "シャーク" in event.message.text or "鮫" in event.message.text:
+            teacher_name = "さめしま"
+            mention = "@kana.sameshima"
+            channel = mention
+
         line_bot_api.reply_message(
         event.reply_token,[
-            TextSendMessage(text="先生を呼び出しているのでちょっとまっててね。（すぐにお返事できない場合があるよ）"),
+            TextSendMessage(text=teacher_name + "先生を呼び出しているのでちょっとまっててね。（すぐにお返事できない場合があるよ）"),
         ])
         # Slackにメッセージを送信
-        send_msg = "<!channel> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(user_name=user_name) \
+        send_msg = "<{mention}> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mension, user_name=user_name) \
                 + "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text)
-        slack_info.notify(text=send_msg)
+        slack_info.notify(text=send_msg, channel=channel)
     # Talk APIを使って会話する
     else:
         r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
