@@ -67,7 +67,7 @@ def handle_message(event):
     slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
     # 先生を召喚する
-    if "先生" in event.message.text or "話" in event.message.text or "呼" in event.message.text or "召喚" in event.message.text:
+    if "先生" in event.message.text or "話" in event.message.text or "呼" in event.message.text or "召喚" in event.message.text or "相談" in event.message.text:
         teacher_name = ""
         mention = "!channel"
         # どの先生を呼び出すのか特定する
