@@ -115,6 +115,21 @@ def handle_message(event):
         if not teacher_name == "":
             slack_info.notify(text=send_msg, channel=mention)
 
+    # 悩んでそうなら先生に相談することを促す
+    elif "悩み" in event.message.text or "悩んで" in event.message.text:
+        ret = "先生に相談してみる？\n「先生と話したい」「相談したい」って話しかけてみてね。"
+        line_bot_api.reply_message(
+        event.reply_token,[
+            TextSendMessage(text=ret),
+        ])
+
+        # botとの会話内容をSlackに連携
+        if TALK_PUSH_FLAG == "true":
+            send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
+                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
+            # メッセージの送信
+            slack_info.notify(text=send_msg)
+
     # Talk APIを使って会話する
     else:
         r = requests.post(TALK_API_URL,{'apikey':TALK_API_KEY,'query':event.message.text})
