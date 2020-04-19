@@ -108,7 +108,7 @@ def handle_message(event):
         ])
         # Slackにメッセージを送信
         send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
-                + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name) \
+                + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name, teacher_name=teacher_name) \
                 + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
         slack_info.notify(text=send_msg)
     # Talk APIを使って会話する
