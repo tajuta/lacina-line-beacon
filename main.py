@@ -70,7 +70,7 @@ def handle_message(event):
     if "先生" in event.message.text or "話したい" in event.message.text:
         teacher_name = ""
         mention = "!channel"
-        channel = ""
+        channel = "#mimamori-lacina"
         # どの先生を呼び出すのか特定する
         if "でんでん" in event.message.text or "でせ" in event.message.text:
             teacher_name = "でんでん"
@@ -86,7 +86,7 @@ def handle_message(event):
             TextSendMessage(text=teacher_name + "先生を呼び出しているのでちょっとまっててね。（すぐにお返事できない場合があるよ）"),
         ])
         # Slackにメッセージを送信
-        send_msg = "<{mention}> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mension, user_name=user_name) \
+        send_msg = "<{mention}> {user_name}さんが先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name) \
                 + "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text)
         slack_info.notify(text=send_msg, channel=channel)
     # Talk APIを使って会話する
