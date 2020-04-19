@@ -113,7 +113,7 @@ def handle_message(event):
         slack_info.notify(text=send_msg)
         # 先生を個別に呼び出す場合はダイレクトメッセージも送る
         if not teacher_name == "":
-            slack_info.notify(text=send_msg, channel=mention)
+            slack_info.notify(text=send_msg, channel="#board-of-directors")
 
     # Talk APIを使って会話する
     else:
