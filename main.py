@@ -106,7 +106,7 @@ def handle_message(event):
         # Slackにメッセージを送信
         send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
                 + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。\n".format(mention=mention, user_name=user_name, teacher_name=teacher_name) \
-                + LINE_ADMIN_URL + "からLINE Official Accountの設定をチャットモードに切り替えて対応してください。\n"
+                + LINE_ADMIN_URL + "からLINE Official Accountの設定をチャットモードに切り替えて対応してください。\n" \
                 + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
         slack_info.notify(text=send_msg)
         # 先生を個別に呼び出す場合はダイレクトメッセージも送る
