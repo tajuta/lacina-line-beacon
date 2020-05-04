@@ -15,23 +15,20 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, BeaconEvent,
 )
 
-
 app = Flask(__name__)
-statusDict  = {}
-status = 0
 
 # 環境変数取得
-YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
-YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
+CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
+CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 WEB_HOOK_LINKS = os.environ["SLACK_WEB_HOOKS_URL"]
-BOT_OAUTH = os.environ["SLACK_BOT_OAUTH"]
+LINE_ADMIN_URL = os.environ["LINE_ADMIN_URL"]
 
 TALK_API_KEY =  os.environ["A3RT_API_KEY"]
 TALK_API_URL = 'https://api.a3rt.recruit-tech.co.jp/talk/v1/smalltalk'
 TALK_PUSH_FLAG = os.environ["LINE_TO_SLACK"]
 
-line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(YOUR_CHANNEL_SECRET)
+line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(CHANNEL_SECRET)
 
 @app.route("/")
 def hello_world():
@@ -67,7 +64,7 @@ def handle_message(event):
     slack_info = slackweb.Slack(url=WEB_HOOK_LINKS)
 
     # 先生を召喚する
-    if "先生" in event.message.text or "話" in event.message.text or "呼" in event.message.text or "召喚" in event.message.text or "相談" in event.message.text:
+    if "先生" in event.message.text or "スタッフ" in event.message.text or "話" in event.message.text or "呼" in event.message.text or "召喚" in event.message.text or "相談" in event.message.text:
         teacher_name = ""
         mention = "!channel"
         # どの先生を呼び出すのか特定する
@@ -108,7 +105,8 @@ def handle_message(event):
         ])
         # Slackにメッセージを送信
         send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
-                + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。LINE Official Accountの設定をチャットモードに切り替えて対応してください。\n".format(mention=mention, user_name=user_name, teacher_name=teacher_name) \
+                + "<{mention}> {user_name}さんが{teacher_name}先生と話したがっています。\n".format(mention=mention, user_name=user_name, teacher_name=teacher_name) \
+                + LINE_ADMIN_URL + "からLINE Official Accountの設定をチャットモードに切り替えて対応してください。\n"
                 + "`※対応が終わったらbotモードに切り替えて、Webhookの設定を必ずオンにしてください。`"
         slack_info.notify(text=send_msg)
         # 先生を個別に呼び出す場合はダイレクトメッセージも送る
