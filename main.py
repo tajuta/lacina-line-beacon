@@ -18,6 +18,7 @@ from linebot.models import (
 app = Flask(__name__)
 
 # 環境変数取得
+SERVICE_NAME = os.environ["SERVICE_NAME"]
 CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 WEB_HOOK_LINKS = os.environ["SLACK_WEB_HOOKS_URL"]
@@ -124,7 +125,7 @@ def handle_message(event):
         # botとの会話内容をSlackに連携
         if TALK_PUSH_FLAG == "true":
             send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
-                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
+                    + "[{service_name}] {ret}\n".format(service_name=SERVICE_NAME, ret=ret)
             # メッセージの送信
             slack_info.notify(text=send_msg)
 
@@ -146,7 +147,7 @@ def handle_message(event):
         # botとの会話内容をSlackに連携
         if TALK_PUSH_FLAG == "true":
             send_msg = "[{user_name}] {message}\n".format(user_name=user_name, message=event.message.text) \
-                    + "[みまもりラシーナ] {ret}\n".format(ret=ret)
+                    + "[{service_name}] {ret}\n".format(service_name=SERVICE_NAME, ret=ret)
             # メッセージの送信
             slack_info.notify(text=send_msg)
 
